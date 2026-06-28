@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andrea Montes — Portfolio Profesional</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold:    #C9A84C;
+    --gold-dk: #A8893A;
+    --gold-lt: #E8D08A;
+    --black:   #1A1A1A;
+    --dark:    #2E2E2E;
+    --mid:     #555555;
+    --gray:    #6B6B6B;
+    --light-bg:#F9F8F5;
+    --white:   #FFFFFF;
+    --border:  #E5E2DB;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: 'Inter', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.7s ease both; }
+  .delay-1 { animation-delay: 0.15s; }
+  .delay-2 { animation-delay: 0.30s; }
+  .delay-3 { animation-delay: 0.45s; }
+  @media (prefers-reduced-motion: reduce) { .fade-up { animation: none; } }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 48px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.12em;
+    color: var(--gold-dk);
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: var(--mid);
+    text-decoration: none;
+    font-size: 0.88rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 4px 1fr;
+    align-items: center;
+    gap: 48px;
+    padding: 120px 48px 80px;
+  }
+  .hero-line {
+    height: 280px;
+    background: linear-gradient(180deg, var(--gold) 0%, transparent 100%);
+    border-radius: 2px;
+  }
+  .hero-content { max-width: 640px; }
+  .hero-eyebrow {
+    font-size: 0.88rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 24px;
+  }
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--black);
+    margin-bottom: 24px;
+  }
+  .hero-name span { color: var(--gold); }
+  .hero-title {
+    font-size: 1.1rem;
+    color: var(--gold-dk);
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+  .hero-bio {
+    font-size: 1rem;
+    color: var(--mid);
+    line-height: 1.8;
+    max-width: 520px;
+  }
+  .hero-tags {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px;
+  }
+  .hero-tags span {
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-dk);
+    border: 1px solid rgba(201,168,76,0.35);
+    padding: 7px 18px;
+    border-radius: 2px;
+  }
+
+  /* ── MANIFIESTO ── */
+  .manifiesto {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 80px 48px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .manifiesto-line {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    color: var(--black);
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 720px;
+  }
+  .manifiesto-line strong { color: var(--gold); font-weight: 700; }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 80px 48px;
+    border-top: 1px solid var(--border);
+  }
+  .section-label {
+    font-size: 0.82rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dk);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 48px;
+    line-height: 1.2;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline { display: flex; flex-direction: column; gap: 40px; }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 140px 4px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .timeline-date {
+    font-size: 0.88rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-dk);
+    text-align: right;
+    padding-top: 4px;
+    font-weight: 500;
+  }
+  .timeline-divider {
+    width: 2px; min-height: 100%;
+    background: linear-gradient(180deg, var(--gold), rgba(201,168,76,0.15));
+    border-radius: 1px; justify-self: center;
+  }
+  .timeline-body h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--black);
+    margin-bottom: 8px;
+  }
+  .timeline-body p {
+    font-size: 0.98rem;
+    color: var(--mid);
+    line-height: 1.8;
+  }
+
+  /* ── CARDS (SERVICIOS) ── */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .card {
+    background: var(--light-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 36px 28px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+  }
+  .card-number {
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dk);
+    margin-bottom: 16px;
+  }
+  .card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--black);
+    margin-bottom: 12px;
+  }
+  .card p {
+    font-size: 0.98rem;
+    color: var(--mid);
+    line-height: 1.7;
+  }
+
+  /* ── ECOSYSTEM ── */
+  .ecosystem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .eco-card {
+    background: var(--light-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 24px;
+  }
+  .eco-card.featured {
+    grid-column: span 2;
+    border-color: var(--gold);
+    background: linear-gradient(135deg, var(--white) 0%, rgba(201,168,76,0.08) 100%);
+  }
+  .eco-status {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .status-active {
+    color: var(--gold-dk);
+    background: rgba(201,168,76,0.14);
+  }
+  .status-paused {
+    color: var(--gray);
+    background: rgba(0,0,0,0.05);
+  }
+  .eco-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--black);
+    margin-bottom: 10px;
+  }
+
+  /* TÍTULO-BOTÓN clickeable */
+  .eco-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--black);
+    text-decoration: none;
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 3px;
+    background: rgba(201,168,76,0.06);
+    transition: all 0.25s ease;
+    cursor: pointer;
+  }
+  .eco-link:hover {
+    background: var(--gold);
+    color: var(--white);
+    border-color: var(--gold);
+    transform: translateX(2px);
+  }
+  .eco-link::after {
+    content: '→';
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
+
+  .eco-card p {
+    font-size: 0.95rem;
+    color: var(--mid);
+    line-height: 1.7;
+  }
+
+  /* ── ACADEMIA ── */
+  .academia-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .academia-item {
+    padding: 24px;
+    border-left: 2px solid var(--gold);
+  }
+  .academia-item h4 {
+    font-size: 0.98rem;
+    color: var(--black);
+    margin-bottom: 4px;
+  }
+  .academia-item p {
+    font-size: 0.9rem;
+    color: var(--mid);
+  }
+
+  /* ── QUOTES ── */
+  .quote-block {
+    max-width: 560px;
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+  .quote-block p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--gold-dk);
+    line-height: 1.7;
+  }
+
+  /* ── CONTACTO ── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 640px;
+  }
+  .contact-item { padding: 20px 0; border-bottom: 1px solid var(--border); }
+  .contact-label {
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-dk);
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .contact-value {
+    font-size: 1rem;
+    color: var(--black);
+  }
+
+  /* ── QR ── */
+  .qr-section {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    padding: 60px 48px;
+    border-top: 1px solid var(--border);
+  }
+  .qr-box {
+    width: 180px; height: 180px;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 4px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: rgba(201,168,76,0.04);
+    gap: 8px; overflow: hidden;
+  }
+  .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+  .qr-text h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--black);
+    margin-bottom: 8px;
+  }
+  .qr-text p { font-size: 0.98rem; color: var(--mid); line-height: 1.7; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--mid);
+    letter-spacing: 0.08em;
+  }
+  footer span { color: var(--gold-dk); font-weight: 500; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 4px 1fr; padding: 100px 24px 60px; gap: 28px; }
+    .hero-name { font-size: 2.8rem; }
+    .manifiesto { padding: 60px 24px; }
+    section { padding: 60px 24px; }
+    .timeline-item { grid-template-columns: 1fr; gap: 8px; }
+    .timeline-date { text-align: left; }
+    .timeline-divider { display: none; }
+    .ecosystem-grid { grid-template-columns: 1fr; }
+    .eco-card.featured { grid-column: span 1; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .qr-section { flex-direction: column; padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Andrea Montes</div>
+  <ul class="nav-links">
+    <li><a href="#trayectoria">Trayectoria</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#ecosistema">Ecosistema</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-line fade-up"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow fade-up">Portfolio Profesional · 2025–2026</p>
+    <h1 class="hero-name fade-up delay-1">Andrea<br><span>Montes.</span></h1>
+    <p class="hero-title fade-up delay-2">Estratega · Consultora · Co-Directora de Lógica de Capital</p>
+    <p class="hero-bio fade-up delay-3">
+      Contadora Pública en formación (UBA), Maestra de Nivel Inicial y arquitecta de un ecosistema de negocios que fusiona educación financiera, tecnología y capital humano. Co-directora del holding Lógica de Capital y fundadora de Prisma, consultoría de empleabilidad premium en LinkedIn.
+    </p>
+    <div class="hero-tags fade-up delay-3">
+      <span>Estrategia financiera</span>
+      <span>Prisma · Ingeniería de Perfil</span>
+      <span>Modelo Centauro</span>
+      <span>Educación</span>
+    </div>
+  </div>
+</div>
+
+<!-- MANIFIESTO -->
+<div class="manifiesto fade-up">
+  <p class="manifiesto-line">Una <strong>decisión</strong>, no una tarea.</p>
+  <p class="manifiesto-line">Un <strong>resultado</strong>, no una descripción.</p>
+  <p class="manifiesto-line">Un <strong>criterio</strong>, no una lista de herramientas.</p>
+</div>
+
+<!-- TRAYECTORIA -->
+<section id="trayectoria">
+  <p class="section-label">Evolución</p>
+  <h2 class="section-title">Trayectoria</h2>
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-date">2024</div>
+      <div class="timeline-divider"></div>
+      <div class="timeline-body">
+        <h3>Enfoque empírico y gestión reactiva</h3>
+        <p>Gestión de "Sabor a ti" basada en dinámicas de mercado masivo. Resolución atomizada de desafíos familiares, legales y operativos del día a día. Primeras preguntas de control inmediato.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">Feb 2025</div>
+      <div class="timeline-divider"></div>
+      <div class="timeline-body">
+        <h3>Quiebre filosófico: la Lógica de Capital</h3>
+        <p>Adopción de la premisa premium ("vender caro y rico"). Rediseño de marca. Planificación del acopio estratégico. Mudanza a Paso Morales para asegurar estabilidad habitacional y logística familiar.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">2025–2026</div>
+      <div class="timeline-divider"></div>
+      <div class="timeline-body">
+        <h3>Soberanía y apalancamiento intelectual</h3>
+        <p>Construcción del holding familiar. Lanzamiento de Prisma (Ingeniería de Perfil) en LinkedIn como motor de subsistencia de margen 100%. Inicio del canal "La Plata que No Ves" y del sistema de formación Centauro.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">Horizonte</div>
+      <div class="timeline-divider"></div>
+      <div class="timeline-body">
+        <h3>Contratos B2B y escala del equipo</h3>
+        <p>Certificación de Operadores Centauro. Primer contrato corporativo validado. Canal activo con audiencia orgánica. Graduación en Contaduría Pública (UBA) como cierre del ciclo académico y apertura del ciclo como CFO del holding.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <p class="section-label">Qué ofrezco</p>
+  <h2 class="section-title">Servicios activos</h2>
+  <div class="cards">
+
+    <div class="card">
+      <p class="card-number">Prisma · Servicio 01</p>
+      <h3>Diagnóstico de Perfil</h3>
+      <p>Auditoría gratuita que revela la distancia entre lo que tu CV dice hoy y lo que debería decir. El punto de partida para entender qué decisiones de tu carrera están invisibles.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-number">Prisma · Servicio 02</p>
+      <h3>Ingeniería de Narrativa Profesional</h3>
+      <p>Reescritura completa del CV y perfil LinkedIn. No se listan tareas: se traducen decisiones en hitos de impacto medible. Incluye carta de presentación de alto impacto. El servicio core de Prisma.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-number">Servicio 03</p>
+      <h3>Arquitectura de Posicionamiento Corporativo</h3>
+      <p>Diseño integral para organizaciones: ingeniería de perfil del equipo clave + automatización de procesos con IA + estrategia de marca empleadora en LinkedIn.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ECOSISTEMA -->
+<section id="ecosistema">
+  <p class="section-label">El holding</p>
+  <h2 class="section-title">Lógica de Capital:<br>el ecosistema</h2>
+  <div class="ecosystem-grid">
+
+    <div class="eco-card featured">
+      <span class="eco-status status-active">Motor principal</span>
+      <a href="#servicios" class="eco-link">Lógica de Capital</a>
+      <p>Holding familiar de servicios intelectuales y educación financiera. Opera bajo dos capas: la Fábrica (incubadora interna de talento con el Modelo Centauro) y la Vidriera (canal público de YouTube). Lema: <em>Lo que no ves, te define.</em></p>
+    </div>
+
+    <div class="eco-card">
+      <span class="eco-status status-active">Motor de ingresos</span>
+      <a href="#servicios" class="eco-link">Prisma · Ingeniería de Perfil</a>
+      <p>Consultoría de empleabilidad premium en LinkedIn. Optimización de CV, perfil profesional y carta de presentación orientados a hitos de impacto real. Margen neto ~100%. Primer caso corporativo internacional activo.</p>
+    </div>
+
+    <div class="eco-card">
+      <span class="eco-status status-active">Activo</span>
+      <a href="#trayectoria" class="eco-link">La Plata que No Ves</a>
+      <p>Canal de YouTube de finanzas personales para jóvenes argentinos. Formato voiceover + animación pizarra. Metodología de Puentes Temporales: historia antigua como gancho emocional para enseñar conceptos financieros modernos.</p>
+    </div>
+
+    <div class="eco-card">
+      <span class="eco-status status-active">Etapa 0</span>
+      <a href="#servicios" class="eco-link">Consultoría B2B</a>
+      <p>Brazo corporativo de Lógica de Capital. Servicios de automatización, estructuración con IA y formación de Operadores Centauro para pymes y organizaciones.</p>
+    </div>
+
+    <div class="eco-card">
+      <span class="eco-status status-paused">Pausa estratégica</span>
+      <h3>Sabor a Ti</h3>
+      <p>Proyecto gastronómico de producción artesanal premium: empanadas, chipá, conservas y catering. Congelado para proteger la caja hasta que el holding genere flujo suficiente.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ACADEMIA -->
+<section>
+  <p class="section-label">Formación</p>
+  <h2 class="section-title">Base académica</h2>
+  <div class="academia-grid">
+    <div class="academia-item">
+      <h4>Contador Público</h4>
+      <p>Universidad de Buenos Aires (UBA) — en curso</p>
+    </div>
+    <div class="academia-item">
+      <h4>Psicología</h4>
+      <p>Universidad de Buenos Aires (UBA) — en curso</p>
+    </div>
+    <div class="academia-item">
+      <h4>Maestra de Nivel Inicial</h4>
+      <p>Título docente — completado</p>
+    </div>
+  </div>
+</section>
+
+<!-- FILOSOFÍA -->
+<section>
+  <p class="section-label">Filosofía</p>
+  <h2 class="section-title" style="text-align:center;">Principios de trabajo</h2>
+
+  <div class="quote-block">
+    <p>"El dinero no es un papel. Es tiempo y energía acumulada. Si no valorás tu tiempo, la plata no se queda."</p>
+  </div>
+
+  <div class="quote-block">
+    <p>"No competimos contra la Inteligencia Artificial. Hacemos equipo con ella. La IA aporta la fuerza bruta; el humano aporta el criterio y la empatía."</p>
+  </div>
+
+  <div class="quote-block">
+    <p>"Todo concepto técnico tiene una historia humana detrás. Si no encontrás la historia, no encontraste el concepto todavía."</p>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <p class="section-label">Contacto</p>
+  <h2 class="section-title">Trabajemos juntos</h2>
+  <div class="contact-grid">
+    <div class="contact-item">
+      <span class="contact-label">Ubicación</span>
+      <span class="contact-value">Paso Morales, Hurlingham — Buenos Aires, Argentina</span>
+    </div>
+    <div class="contact-item">
+      <span class="contact-label">Email</span>
+      <span class="contact-value"><a href="mailto:andreairismontes@gmail.com" style="color:#A8893A; text-decoration:none;">andreairismontes@gmail.com</a></span>
+    </div>
+    <div class="contact-item" style="grid-column: span 2;">
+      <span class="contact-label">LinkedIn</span>
+      <span class="contact-value"><a href="https://www.linkedin.com/in/andreairismontes/" target="_blank" style="color:#A8893A; text-decoration:none;">linkedin.com/in/andreairismontes</a></span>
+    </div>
+    <div class="contact-item" style="grid-column: span 2;">
+      <span class="contact-label">WhatsApp</span>
+      <span class="contact-value"><a href="https://wa.me/5491155245044" target="_blank" style="color:#A8893A; text-decoration:none;">+54 9 11 5524-5044 · Andrea</a></span>
+    </div>
+  </div>
+</section>
+
+<!-- QR PLACEHOLDER -->
+<div class="qr-section">
+  <div class="qr-box">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABHwAAAR8CAIAAABg6hR4AAAABmJLR0QA/wD/AP+gvaeTAAAfsUlEQVR4nOzbPc4j17VAUbfBVJEhpw6caQDMnTlhzDEy5gA65wCUdyx0pAHQ+UM/iIZq+/LwrjWAwrk/xf42Cv3l+Xz+BQAAgMZfVw8AAADwyUQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhE6rB3jV43ZZPQIf4ny9H/7Mne9nsZ8FZ7SnKec+5YyK/bT2Y+08J3ua8hviSxcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQOi0egDgf+d8va8e4aMU+/m4XUY8c8pdmnJGBXMCvI/do+tv//jXTz//snoKfuD33379/u3r6ikAgDH8Xfe2/F23e3T99PMvf//nv1dPwY9t/nICAP8Vf9e9s83/rvN/ugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKn1QN8msftsnqEZc7X++oRlinWXtwl9/NYxX7u/B5xrJ3v0pR3c8qcO/Pv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AICQ6AIAAAiJLgAAgJDoAgAACIkuAACAkOgCAAAIiS4AAICQ6AIAAAiJLgAAgJDoAgAACIkuAACAkOgCAAAIiS4AAICQ6AIAAAiJLgAAgJDoAgAACIkuAACAkOgCAAAIiS4AAICQ6AIAAAiJLgAAgJDoAgAACH15Pp+rZ1jmcbusHuEl5+v98GcWay/mLOx87lNMOaPCzu/7zudemHJGO//WFZzR+3NGe/KlCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgdFo9wKset8vqEVjAuR9ryn6er/fVI7xkyn5O4dw5SnFGU+5nYcp+Tplz57u0M1+6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCp9UDrHS+3lePsEyx9sftcvgzdz6jKftZzFnYeT+nvEdT7lJh57u087kXdn7f3c/3N+V+FnzpAgAACIkuAACAkOgCAAAIiS4AAICQ6AIAAAiJLgAAgJDoAgAACIkuAACAkOgCAAAIiS4AAICQ6AIAAAiJLgAAgJDoAgAACIkuAACAkOgCAAAIiS4AAICQ6AIAAAiJLgAAgJDoAgAACIkuAACAkOgCAAAIiS4AAICQ6AIAAAiJLgAAgJDoAgAACIkuAACAkOgCAAAInVYP8Krz9b56hJc8bpfDnzll7QX7eaxiPws7n/uUOafcpSn7yfvb+c5PWfsUU85o5zkLvnQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIROqwf4NOfr/fBnPm6Xw59ZKNZeKPZzytqn3M8p+1nwvh9ryv2cMie8sym/n1PYz2P50gUAABASXQAAACHRBQAAEBJdAAAAIdEFAAAQEl0AAAAh0QUAABASXQAAACHRBQAAEBJdAAAAIdEFAAAQEl0AAAAh0QUAABASXQAAACHRBQAAEBJdAAAAIdEFAAAQEl0AAAAh0QUAABASXQAAACHRBQAAEBJdAAAAIdEFAAAQEl0AAAAh0QUAABASXQAAACHRBQAAEDqtHmClx+2yeoSPMmU/z9f74c+csvYpcxamrH3K/Zyyn4Wd186xivd9ip3XvvNvyM7n7ksXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIREFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEDotHqAVz1ul8Ofeb7eD39mMecUxX5yrCl3fsp7NGU/C1Pe9yn7ybGmvJtT/raZsp9TTPn9LEy58wVfugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQl+ez+fqGT7K43ZZPQJ/4Hy9rx7hJVPu0s77OWXtO5ty7ju/7zuvvTBlP3c25T2acuen8KULAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACAkugAAAEKiCwAAICS6AAAAQqILAAAgJLoAAABCogsAACB0Wj3Apzlf76tHYIHH7XL4M6fcpWLtU0xZe3GXptz5nddezLnznd/Zzvs55c5PMeX3s+BLFwAAQEh0AQAAhEQXAABASHQBAACERBcAAEBIdAEAAIRE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" alt="QR Code - Portfolio Andrea Montes">
+  </div>
+  <div class="qr-text">
+    <h4>Portfolio digital siempre disponible</h4>
+    <p>Escaneá este QR para acceder al portfolio completo. Podés imprimirlo en tarjetas, incluirlo en el CV o compartirlo por WhatsApp en un toque.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p><span>Andrea Montes</span> · Lógica de Capital · Buenos Aires, Argentina</p>
+  <p style="margin-top:8px; font-style:italic; color: #A8893A;">Lo que no ves, te define.</p>
+</footer>
+
+</body>
+</html>
