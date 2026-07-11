@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Bazar — Buscador, Reposición y Escáner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --oro:#C9A84C; --oro-hondo:#A8893A; --crema:#FAF6EC; --papel:#FFFFFF;
+    --tinta:#2A2620; --gris:#7A7266; --linea:#E7DEC8;
+    --ok:#4B7A54; --ok-bg:#E9F1E9;
+    --repo:#B4832A; --repo-bg:#FBF0D6;
+    --cero:#B0453A; --cero-bg:#F7E4E1;
+    --sombra:0 1px 2px rgba(42,38,32,.06), 0 8px 24px rgba(42,38,32,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--crema);color:var(--tinta);-webkit-font-smoothing:antialiased;line-height:1.4}
+  .wrap{max-width:820px;margin:0 auto;padding:20px 16px 64px}
+
+  header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+  .marca{font-family:'Playfair Display',Georgia,serif;font-size:1.55rem;font-weight:700;letter-spacing:-.01em}
+  .marca span{color:var(--oro-hondo)}
+  .sub{font-size:.78rem;color:var(--gris);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .kpi{background:var(--papel);border:1px solid var(--linea);border-radius:14px;padding:12px 14px;box-shadow:var(--sombra)}
+  .kpi .n{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;line-height:1}
+  .kpi .l{font-size:.72rem;color:var(--gris);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+  .kpi.rep .n{color:var(--repo)} .kpi.cer .n{color:var(--cero)}
+
+  .tabs{display:flex;gap:6px;background:var(--papel);border:1px solid var(--linea);border-radius:12px;padding:5px;margin-bottom:16px;box-shadow:var(--sombra)}
+  .tab{flex:1;border:none;background:transparent;padding:10px 8px;border-radius:8px;font-family:inherit;font-size:.9rem;font-weight:600;color:var(--gris);cursor:pointer;transition:.15s}
+  .tab.on{background:var(--oro);color:#fff}
+  .tab .badge{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:20px;background:var(--repo-bg);color:var(--repo);font-size:.72rem;font-weight:700}
+  .tab.on .badge{background:rgba(255,255,255,.25);color:#fff}
+
+  .searchbar{display:flex;gap:8px;margin-bottom:12px}
+  .search{position:relative;flex:1}
+  .search input{width:100%;padding:16px 18px 16px 46px;font-family:inherit;font-size:1.05rem;border:2px solid var(--linea);border-radius:14px;background:var(--papel);color:var(--tinta);outline:none;transition:.15s;box-shadow:var(--sombra)}
+  .search input:focus{border-color:var(--oro)}
+  .search .ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--oro-hondo);font-size:1.1rem}
+  .scan-btn{border:none;background:var(--oro);color:#fff;border-radius:14px;padding:0 18px;font-size:1.5rem;cursor:pointer;box-shadow:var(--sombra);transition:.15s}
+  .scan-btn:active{background:var(--oro-hondo)}
+  .hint{font-size:.78rem;color:var(--gris);margin:0 4px 14px}
+
+  .lista{display:flex;flex-direction:column;gap:8px}
+  .row{background:var(--papel);border:1px solid var(--linea);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:var(--sombra);transition:.4s}
+  .row.flash{border-color:var(--oro);background:#FFFBF0;box-shadow:0 0 0 3px rgba(201,168,76,.25)}
+  .cod{font-size:.74rem;font-weight:700;color:var(--gris);background:var(--crema);border:1px solid var(--linea);padding:3px 7px;border-radius:7px;white-space:nowrap}
+  .info{flex:1;min-width:0}
+  .nom{font-weight:600;font-size:.98rem;line-height:1.25}
+  .cat{font-size:.76rem;color:var(--gris);margin-top:2px}
+  .ean{font-size:.68rem;color:var(--gris);margin-top:2px;font-variant-numeric:tabular-nums}
+  .precio{font-family:'Playfair Display',serif;font-weight:700;font-size:1.02rem;white-space:nowrap}
+
+  .badge-stock{font-size:.72rem;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap}
+  .b-ok{background:var(--ok-bg);color:var(--ok)} .b-rep{background:var(--repo-bg);color:var(--repo)} .b-cero{background:var(--cero-bg);color:var(--cero)}
+
+  .stepper{display:flex;align-items:center;border:1px solid var(--linea);border-radius:10px;overflow:hidden}
+  .stepper button{width:34px;height:34px;border:none;background:var(--crema);color:var(--oro-hondo);font-size:1.2rem;font-weight:700;cursor:pointer;line-height:1}
+  .stepper button:active{background:var(--oro);color:#fff}
+  .stepper .val{min-width:38px;text-align:center;font-weight:700;font-size:.95rem}
+  .stepper .val small{display:block;font-size:.6rem;color:var(--gris);font-weight:600;text-transform:uppercase;margin-top:-2px}
+
+  .pedir{text-align:center;min-width:56px}
+  .pedir .p-n{font-family:'Playfair Display',serif;font-weight:700;font-size:1.3rem;color:var(--repo);line-height:1}
+  .pedir .p-l{font-size:.64rem;color:var(--gris);text-transform:uppercase;font-weight:600}
+
+  .vacio{text-align:center;padding:44px 20px;color:var(--gris)}
+  .vacio .em{font-size:2rem;margin-bottom:10px} .vacio b{color:var(--tinta);display:block;margin-bottom:4px;font-size:1rem}
+
+  .barra{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .btn{flex:1;min-width:140px;border:none;padding:13px 16px;border-radius:12px;font-family:inherit;font-size:.92rem;font-weight:700;cursor:pointer;transition:.15s;box-shadow:var(--sombra)}
+  .btn-oro{background:var(--oro);color:#fff} .btn-oro:active{background:var(--oro-hondo)}
+  .btn-linea{background:var(--papel);color:var(--tinta);border:1px solid var(--linea)}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--tinta);color:var(--crema);padding:12px 20px;border-radius:12px;font-size:.9rem;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* Escáner */
+  .scanner{position:fixed;inset:0;background:rgba(20,17,13,.92);z-index:50;display:none;flex-direction:column;padding:16px;color:#fff}
+  .scanner.open{display:flex}
+  .sc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .sc-top h3{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700}
+  .sc-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:38px;height:38px;border-radius:10px;font-size:1.3rem;cursor:pointer}
+  .sc-view{position:relative;flex:0 0 auto;aspect-ratio:4/3;max-height:52vh;background:#000;border-radius:16px;overflow:hidden;margin-bottom:12px}
+  .sc-view video{width:100%;height:100%;object-fit:cover}
+  .sc-frame{position:absolute;inset:18% 12%;border:3px solid rgba(201,168,76,.9);border-radius:14px;box-shadow:0 0 0 2000px rgba(0,0,0,.25)}
+  .sc-line{position:absolute;left:12%;right:12%;top:50%;height:2px;background:var(--oro);box-shadow:0 0 12px var(--oro);animation:sweep 2s ease-in-out infinite}
+  @keyframes sweep{0%,100%{top:20%}50%{top:78%}}
+  .sc-status{text-align:center;font-size:.9rem;color:rgba(255,255,255,.8);margin-bottom:12px;min-height:20px}
+  .sc-manual{display:flex;gap:8px;margin-bottom:12px}
+  .sc-manual input{flex:1;padding:13px 14px;border-radius:12px;border:none;font-family:inherit;font-size:1rem;background:rgba(255,255,255,.12);color:#fff}
+  .sc-manual input::placeholder{color:rgba(255,255,255,.5)}
+  .sc-manual button{border:none;background:var(--oro);color:#fff;border-radius:12px;padding:0 18px;font-weight:700;cursor:pointer}
+  .sc-demo{border-top:1px solid rgba(255,255,255,.15);padding-top:12px}
+  .sc-demo p{font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:8px}
+  .sc-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:rgba(255,255,255,.12);border:none;color:#fff;padding:7px 11px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums}
+  .chip:active{background:var(--oro)}
+
+  .pie{margin-top:28px;text-align:center;font-size:.74rem;color:var(--gris)} .pie b{color:var(--oro-hondo)}
+  @media (max-width:560px){.kpi .n{font-size:1.4rem}.precio{display:none}.cat{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="marca">Bazar <span>·</span> Gestión</div>
+      <div class="sub">Buscar · reponer · escanear · demo</div>
+    </div>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi"><div class="n" id="kTotal">0</div><div class="l">Productos</div></div>
+    <div class="kpi rep"><div class="n" id="kRepo">0</div><div class="l">Para reponer</div></div>
+    <div class="kpi cer"><div class="n" id="kCero">0</div><div class="l">Sin stock</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabBuscar" onclick="ir('buscar')">Buscar producto</button>
+    <button class="tab" id="tabRepo" onclick="ir('repo')">Reposición <span class="badge" id="tabBadge">0</span></button>
+  </div>
+
+  <div id="vistaBuscar">
+    <div class="searchbar">
+      <div class="search">
+        <span class="ico">🔍</span>
+        <input id="q" type="text" placeholder="Nombre o código…" autocomplete="off" oninput="render()">
+      </div>
+      <button class="scan-btn" onclick="openScanner()" title="Escanear con la cámara">📷</button>
+    </div>
+    <div class="hint">Tocá 📷 para escanear el código de barras con la cámara del celu. Ajustá el stock con − / +.</div>
+    <div class="lista" id="resultados"></div>
+  </div>
+
+  <div id="vistaRepo" style="display:none">
+    <div class="barra">
+      <button class="btn btn-oro" onclick="copiar()">📋 Copiar lista para el pedido</button>
+      <button class="btn btn-linea" onclick="descargar()">⬇ Descargar (.txt)</button>
+    </div>
+    <div class="hint">Todo lo que llegó al mínimo o por debajo, calculado solo. "Pedir" vuelve el stock al doble del mínimo.</div>
+    <div class="lista" id="listaRepo"></div>
+  </div>
+
+  <div class="pie">Simulación de <b>Lógica de Capital</b> · Lo que no ves, te define.</div>
+</div>
+
+<!-- ESCÁNER -->
+<div class="scanner" id="scanner">
+  <div class="sc-top">
+    <h3>Escanear código</h3>
+    <button class="sc-close" onclick="closeScanner()">✕</button>
+  </div>
+  <div class="sc-view">
+    <video id="video" playsinline muted></video>
+    <div class="sc-frame"></div>
+    <div class="sc-line"></div>
+  </div>
+  <div class="sc-status" id="scStatus">Apuntá al código de barras…</div>
+  <div class="sc-manual">
+    <input id="manualEan" type="text" inputmode="numeric" placeholder="…o ingresá el número a mano" onkeydown="if(event.key==='Enter')manualBuscar()">
+    <button onclick="manualBuscar()">Buscar</button>
+  </div>
+  <div class="sc-demo">
+    <p>¿La cámara no arranca en esta vista previa? Tocá un código de prueba para ver el flujo:</p>
+    <div class="sc-chips" id="demoChips"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---- DATOS SIMULADOS (bazar, con código de barras EAN) ----
+let productos = [
+  {cod:'BZ-001', ean:'7790001000018', nom:'Juego de ollas 5 piezas antiadherente', cat:'Cocina', precio:48900, stock:2, min:2},
+  {cod:'BZ-002', ean:'7790001000025', nom:'Sartén teflón 24 cm', cat:'Cocina', precio:12400, stock:0, min:3},
+  {cod:'BZ-003', ean:'7790001000032', nom:'Cacerola esmaltada 20 cm', cat:'Cocina', precio:15800, stock:5, min:2},
+  {cod:'BZ-004', ean:'7790001000049', nom:'Set 6 vasos de vidrio 300 ml', cat:'Mesa', precio:6900, stock:1, min:4},
+  {cod:'BZ-005', ean:'7790001000056', nom:'Juego 6 copas de vino', cat:'Mesa', precio:9800, stock:3, min:2},
+  {cod:'BZ-006', ean:'7790001000063', nom:'Set 12 cubiertos acero inox.', cat:'Mesa', precio:11200, stock:8, min:3},
+  {cod:'BZ-007', ean:'7790001000070', nom:'Mate imperial forrado', cat:'Mateo', precio:8700, stock:2, min:5},
+  {cod:'BZ-008', ean:'7790001000087', nom:'Bombilla acero pico loro', cat:'Mateo', precio:3200, stock:14, min:6},
+  {cod:'BZ-009', ean:'7790001000094', nom:'Termo acero 1 litro', cat:'Mateo', precio:22400, stock:1, min:3},
+  {cod:'BZ-010', ean:'7790001000100', nom:'Pava eléctrica 1,7 L', cat:'Electro', precio:31900, stock:0, min:2},
+  {cod:'BZ-011', ean:'7790001000117', nom:'Tabla de picar bambú', cat:'Cocina', precio:5400, stock:9, min:4},
+  {cod:'BZ-012', ean:'7790001000124', nom:'Set 3 bowls encastrables', cat:'Cocina', precio:7300, stock:6, min:3},
+  {cod:'BZ-013', ean:'7790001000131', nom:'Colador acero mango largo', cat:'Cocina', precio:4100, stock:2, min:3},
+  {cod:'BZ-014', ean:'7790001000148', nom:'Fuente horno rectangular vidrio', cat:'Cocina', precio:13600, stock:4, min:2},
+  {cod:'BZ-015', ean:'7790001000155', nom:'Set 4 tuppers herméticos', cat:'Organización', precio:8900, stock:3, min:5},
+  {cod:'BZ-016', ean:'7790001000162', nom:'Organizador cubiertos cajón', cat:'Organización', precio:4700, stock:0, min:2},
+  {cod:'BZ-017', ean:'7790001000179', nom:'Cesto ropa plegable', cat:'Organización', precio:9200, stock:7, min:3},
+  {cod:'BZ-018', ean:'7790001000186', nom:'Repasadores algodón x3', cat:'Cocina', precio:5600, stock:2, min:6},
+  {cod:'BZ-019', ean:'7790001000193', nom:'Guante de cocina silicona', cat:'Cocina', precio:3800, stock:11, min:4},
+  {cod:'BZ-020', ean:'7790001000209', nom:'Escurridor de platos metálico', cat:'Cocina', precio:10400, stock:1, min:2},
+  {cod:'BZ-021', ean:'7790001000216', nom:'Difusor de aromas eléctrico', cat:'Deco', precio:16700, stock:2, min:3},
+  {cod:'BZ-022', ean:'7790001000223', nom:'Set 6 tazas de café con plato', cat:'Mesa', precio:12900, stock:5, min:2},
+  {cod:'BZ-023', ean:'7790001000230', nom:'Jarra medidora 1 L', cat:'Cocina', precio:3600, stock:8, min:3},
+  {cod:'BZ-024', ean:'7790001000247', nom:'Portarretrato madera 15x20', cat:'Deco', precio:4900, stock:0, min:4},
+  {cod:'BZ-025', ean:'7790001000254', nom:'Set 3 perchas madera', cat:'Organización', precio:2800, stock:16, min:8},
+  {cod:'BZ-026', ean:'7790001000261', nom:'Asadera aluminio 35 cm', cat:'Cocina', precio:7100, stock:3, min:2},
+  {cod:'BZ-027', ean:'7790001000278', nom:'Vajilla 12 piezas cerámica', cat:'Mesa', precio:38400, stock:1, min:2},
+];
+
+const fmt = n => '$' + n.toLocaleString('es-AR');
+const pedir = p => Math.max(1, (p.min*2) - p.stock);
+const estado = p => p.stock===0 ? 'cero' : (p.stock<=p.min ? 'repo' : 'ok');
+let vista = 'buscar';
+
+function ir(v){
+  vista = v;
+  document.getElementById('vistaBuscar').style.display = v==='buscar'?'block':'none';
+  document.getElementById('vistaRepo').style.display = v==='repo'?'block':'none';
+  document.getElementById('tabBuscar').classList.toggle('on', v==='buscar');
+  document.getElementById('tabRepo').classList.toggle('on', v==='repo');
+  render();
+  if(v==='buscar') document.getElementById('q').focus();
+}
+
+function ajustar(cod, delta){
+  const p = productos.find(x=>x.cod===cod);
+  if(!p) return;
+  p.stock = Math.max(0, p.stock + delta);
+  render();
+}
+
+function badgeStock(p){
+  const e = estado(p);
+  return e==='cero' ? '<span class="badge-stock b-cero">Sin stock</span>'
+       : e==='repo' ? '<span class="badge-stock b-rep">Reponer</span>'
+       : '<span class="badge-stock b-ok">OK · '+p.stock+'</span>';
+}
+function stepper(p){
+  return `<div class="stepper"><button onclick="ajustar('${p.cod}',-1)">−</button><div class="val">${p.stock}<small>hay</small></div><button onclick="ajustar('${p.cod}',1)">+</button></div>`;
+}
+function filaBuscar(p){
+  const fl = window._flash===p.cod ? ' flash':'';
+  return `<div class="row${fl}" id="r_${p.cod}">
+    <span class="cod">${p.cod}</span>
+    <div class="info"><div class="nom">${p.nom}</div><div class="cat">${p.cat}</div><div class="ean">📊 ${p.ean}</div></div>
+    <span class="precio">${fmt(p.precio)}</span>${badgeStock(p)}${stepper(p)}</div>`;
+}
+function filaRepo(p){
+  const e = estado(p);
+  const b = e==='cero' ? '<span class="badge-stock b-cero">Sin stock</span>' : '<span class="badge-stock b-rep">Mín. '+p.min+'</span>';
+  return `<div class="row">
+    <span class="cod">${p.cod}</span>
+    <div class="info"><div class="nom">${p.nom}</div><div class="cat">${p.cat}</div></div>
+    ${b}${stepper(p)}
+    <div class="pedir"><div class="p-n">${pedir(p)}</div><div class="p-l">pedir</div></div></div>`;
+}
+
+function render(){
+  const repos = productos.filter(p=>p.stock<=p.min).sort((a,b)=>(a.stock-b.stock)||a.nom.localeCompare(b.nom));
+  const ceros = productos.filter(p=>p.stock===0).length;
+  document.getElementById('kTotal').textContent = productos.length;
+  document.getElementById('kRepo').textContent = repos.length;
+  document.getElementById('kCero').textContent = ceros;
+  document.getElementById('tabBadge').textContent = repos.length;
+
+  if(vista==='buscar'){
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const res = q==='' ? productos : productos.filter(p=> p.nom.toLowerCase().includes(q) || p.cod.toLowerCase().includes(q) || p.ean.includes(q));
+    const cont = document.getElementById('resultados');
+    cont.innerHTML = res.length===0
+      ? `<div class="vacio"><div class="em">🔍</div><b>Sin resultados para "${q}"</b>Probá otra palabra, el código o escaneá.</div>`
+      : res.map(filaBuscar).join('');
+    if(window._flash){
+      const el = document.getElementById('r_'+window._flash);
+      if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); }
+      setTimeout(()=>{ window._flash=null; const e=document.getElementById('r_'+ (el?el.id.slice(2):'')); }, 1600);
+      setTimeout(()=>{ const f=document.querySelector('.row.flash'); if(f)f.classList.remove('flash'); }, 1600);
+    }
+  } else {
+    const cont = document.getElementById('listaRepo');
+    cont.innerHTML = repos.length===0
+      ? `<div class="vacio"><div class="em">✅</div><b>Todo con stock suficiente</b>No hay nada para reponer.</div>`
+      : repos.map(filaRepo).join('');
+  }
+}
+
+// ---------- LISTA / EXPORT ----------
+function textoLista(){
+  const repos = productos.filter(p=>p.stock<=p.min).sort((a,b)=>(a.stock-b.stock)||a.nom.localeCompare(b.nom));
+  const hoy = new Date().toLocaleDateString('es-AR');
+  let t = `LISTA DE REPOSICIÓN — ${hoy}\n(${repos.length} productos)\n\n`;
+  repos.forEach(p=> t += `• ${p.nom} (${p.cod}) → pedir ${pedir(p)}  [hay ${p.stock}, mín ${p.min}]\n`);
+  return t;
+}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2200);}
+function copiar(){navigator.clipboard.writeText(textoLista()).then(()=>toast('Lista copiada ✓ Pegala en WhatsApp'),()=>toast('Usá Descargar (.txt)'));}
+function descargar(){const b=new Blob([textoLista()],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='reposicion.txt';a.click();toast('Archivo descargado ✓');}
+
+// ---------- ESCÁNER ----------
+let stream=null, scanning=false, detector=null, handling=false, zxingReader=null;
+if('BarcodeDetector' in window){ try{ detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39']}); }catch(e){ detector=null; } }
+
+function beep(){ try{ const ac=new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(),g=ac.createGain(); o.connect(g);g.connect(ac.destination); o.frequency.value=880; g.gain.setValueAtTime(.2,ac.currentTime); o.start(); o.stop(ac.currentTime+.12);}catch(e){} }
+
+function setStatus(t){ document.getElementById('scStatus').textContent = t; }
+
+async function openScanner(){
+  document.getElementById('scanner').classList.add('open');
+  handling=false;
+  buildChips();
+  setStatus('Encendiendo cámara…');
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ideal:'environment'} }, audio:false });
+    const v=document.getElementById('video'); v.srcObject=stream; await v.play();
+    if(detector){ scanning=true; setStatus('Apuntá al código de barras…'); tick(); }
+    else { await tryZXing(); }
+  }catch(err){
+    setStatus('⚠ No se pudo abrir la cámara acá. Ingresá el número a mano o usá un código de prueba.');
+  }
+}
+
+async function tick(){
+  if(!scanning) return;
+  try{
+    const codes = await detector.detect(document.getElementById('video'));
+    if(codes && codes.length) return onScan(codes[0].rawValue);
+  }catch(e){}
+  if(scanning) requestAnimationFrame(tick);
+}
+
+async function tryZXing(){
+  setStatus('Cargando lector…');
+  try{
+    if(!window.ZXing){
+      await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+    }
+    zxingReader = new ZXing.BrowserMultiFormatReader();
+    setStatus('Apuntá al código de barras…');
+    zxingReader.decodeFromVideoElement(document.getElementById('video'), (result)=>{ if(result) onScan(result.getText()); });
+  }catch(e){
+    setStatus('⚠ Este navegador no puede leer con la cámara. Ingresá el número a mano o probá un código de prueba.');
+  }
+}
+
+function onScan(raw){
+  if(handling) return; handling=true;
+  const code = String(raw).trim();
+  const p = productos.find(x=> x.ean===code || x.cod.toLowerCase()===code.toLowerCase());
+  beep(); if(navigator.vibrate) navigator.vibrate(80);
+  if(p){
+    setStatus('✓ '+p.nom);
+    setTimeout(()=>{ closeScanner(); irAlProducto(p); }, 350);
+  } else {
+    setStatus('✕ Código '+code+' no está en el catálogo');
+    setTimeout(()=>{ handling=false; if(scanning||zxingReader) setStatus('Apuntá al código de barras…'); }, 1400);
+  }
+}
+
+function manualBuscar(){
+  const v=document.getElementById('manualEan').value.trim();
+  if(v) onScan(v);
+}
+
+function irAlProducto(p){
+  vista='buscar'; ir('buscar');
+  document.getElementById('q').value = p.nom;
+  window._flash = p.cod;
+  render();
+  toast(fmt(p.precio)+' · '+p.nom);
+}
+
+function closeScanner(){
+  scanning=false; handling=false;
+  if(zxingReader){ try{ zxingReader.reset(); }catch(e){} zxingReader=null; }
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  document.getElementById('manualEan').value='';
+  document.getElementById('scanner').classList.remove('open');
+}
+
+function buildChips(){
+  const ejemplos = [productos[1], productos[6], productos[9]]; // sin stock / reponer
+  document.getElementById('demoChips').innerHTML = ejemplos.map(p=>
+    `<button class="chip" onclick="onScan('${p.ean}')">${p.ean}</button>`
+  ).join('');
+}
+
+render();
+document.getElementById('q').focus();
+</script>
+</body>
+</html>
