@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Local — Lista de reposición</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --oro:#C9A84C; --oro-hondo:#A8893A; --crema:#FAF6EC; --papel:#FFFFFF;
+    --tinta:#2A2620; --gris:#7A7266; --linea:#E7DEC8;
+    --ok:#4B7A54; --ok-bg:#E9F1E9; --rojo:#B0453A;
+    --sombra:0 1px 2px rgba(42,38,32,.06), 0 8px 24px rgba(42,38,32,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--crema);color:var(--tinta);-webkit-font-smoothing:antialiased;line-height:1.4}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 72px}
+
+  header{margin-bottom:16px}
+  .marca{font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;font-weight:700;letter-spacing:-.01em}
+  .marca span{color:var(--oro-hondo)}
+  .sub{font-size:.78rem;color:var(--gris);letter-spacing:.04em;text-transform:uppercase;font-weight:600;margin-top:2px}
+
+  .tabs{display:flex;gap:6px;background:var(--papel);border:1px solid var(--linea);border-radius:12px;padding:5px;margin-bottom:16px;box-shadow:var(--sombra)}
+  .tab{flex:1;border:none;background:transparent;padding:11px 8px;border-radius:8px;font-family:inherit;font-size:.92rem;font-weight:600;color:var(--gris);cursor:pointer;transition:.15s}
+  .tab.on{background:var(--oro);color:#fff}
+  .tab .badge{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:20px;background:var(--rojo);color:#fff;font-size:.72rem;font-weight:700}
+  .tab.on .badge{background:rgba(255,255,255,.28)}
+
+  /* Entrada dictado */
+  .entrada{background:var(--papel);border:1px solid var(--linea);border-radius:16px;padding:14px;box-shadow:var(--sombra);margin-bottom:14px;position:relative}
+  .entrada label{display:block;font-weight:700;font-size:.95rem;margin-bottom:8px}
+  .fila-in{display:flex;gap:8px}
+  .fila-in input{flex:1;padding:14px 15px;font-family:inherit;font-size:1.05rem;border:2px solid var(--linea);border-radius:12px;background:var(--crema);color:var(--tinta);outline:none;transition:.15s}
+  .fila-in input:focus{border-color:var(--oro);background:#fff}
+  .icobtn{border:none;border-radius:12px;width:52px;font-size:1.4rem;cursor:pointer;transition:.15s;color:#fff}
+  .b-mic{background:var(--oro)} .b-mic.rec{background:var(--rojo);animation:pulse 1s infinite}
+  .b-cam{background:var(--oro-hondo)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+  .tip{font-size:.76rem;color:var(--gris);margin-top:8px}
+
+  .sugs{position:absolute;left:14px;right:14px;top:100%;margin-top:-4px;background:#fff;border:1px solid var(--linea);border-radius:12px;box-shadow:var(--sombra);z-index:10;overflow:hidden;display:none}
+  .sugs.on{display:block}
+  .sug{padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--linea);display:flex;justify-content:space-between;gap:10px}
+  .sug:last-child{border-bottom:none}
+  .sug:hover{background:var(--crema)}
+  .sug .n{font-weight:600;font-size:.92rem}
+  .sug .m{font-size:.78rem;color:var(--gris);white-space:nowrap}
+
+  /* Lista pedido */
+  .cab{display:flex;justify-content:space-between;align-items:center;margin:0 4px 10px}
+  .cab h2{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700}
+  .cab .cont{font-size:.8rem;color:var(--gris);font-weight:600}
+  .lista{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  .row{background:var(--papel);border:1px solid var(--linea);border-radius:14px;padding:12px 12px;display:flex;align-items:center;gap:10px;box-shadow:var(--sombra);animation:in .25s}
+  @keyframes in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .cod{font-size:.72rem;font-weight:700;color:var(--gris);background:var(--crema);border:1px solid var(--linea);padding:3px 7px;border-radius:7px;white-space:nowrap}
+  .info{flex:1;min-width:0}
+  .nom{font-weight:600;font-size:.96rem;line-height:1.2}
+  .cat{font-size:.75rem;color:var(--gris);margin-top:2px}
+  .precio{font-family:'Playfair Display',serif;font-weight:700;font-size:.95rem;white-space:nowrap;color:var(--tinta)}
+  .stepper{display:flex;align-items:center;border:1px solid var(--linea);border-radius:10px;overflow:hidden}
+  .stepper button{width:32px;height:34px;border:none;background:var(--crema);color:var(--oro-hondo);font-size:1.2rem;font-weight:700;cursor:pointer}
+  .stepper button:active{background:var(--oro);color:#fff}
+  .stepper .val{min-width:34px;text-align:center;font-weight:700;font-size:.95rem}
+  .quitar{border:none;background:transparent;color:var(--gris);font-size:1.15rem;cursor:pointer;padding:4px 6px}
+  .quitar:hover{color:var(--rojo)}
+
+  .barra{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{flex:1;min-width:130px;border:none;padding:13px 14px;border-radius:12px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:var(--sombra);transition:.15s}
+  .btn-oro{background:var(--oro);color:#fff} .btn-oro:active{background:var(--oro-hondo)}
+  .btn-linea{background:var(--papel);color:var(--tinta);border:1px solid var(--linea)}
+  .btn-ghost{flex:0 0 auto;background:transparent;color:var(--gris);box-shadow:none;min-width:auto;padding:13px 12px}
+
+  .vacio{text-align:center;padding:40px 20px;color:var(--gris);background:var(--papel);border:1px dashed var(--linea);border-radius:16px}
+  .vacio .em{font-size:1.9rem;margin-bottom:8px} .vacio b{color:var(--tinta);display:block;margin-bottom:4px}
+
+  /* Catálogo */
+  .search{position:relative;margin-bottom:12px}
+  .search input{width:100%;padding:14px 15px 14px 44px;font-family:inherit;font-size:1.02rem;border:2px solid var(--linea);border-radius:14px;background:var(--papel);outline:none;box-shadow:var(--sombra)}
+  .search input:focus{border-color:var(--oro)}
+  .search .ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--oro-hondo)}
+  .add{border:none;background:var(--oro);color:#fff;border-radius:10px;width:34px;height:34px;font-size:1.3rem;cursor:pointer;line-height:1}
+  .add:active{background:var(--oro-hondo)}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--tinta);color:var(--crema);padding:12px 20px;border-radius:12px;font-size:.9rem;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90%;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* Escáner */
+  .scanner{position:fixed;inset:0;background:rgba(20,17,13,.94);z-index:50;display:none;flex-direction:column;padding:16px;color:#fff}
+  .scanner.open{display:flex}
+  .sc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .sc-top h3{font-family:'Playfair Display',serif;font-size:1.2rem}
+  .sc-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:38px;height:38px;border-radius:10px;font-size:1.3rem;cursor:pointer}
+  .sc-view{position:relative;aspect-ratio:4/3;max-height:50vh;background:#000;border-radius:16px;overflow:hidden;margin-bottom:12px}
+  .sc-view video{width:100%;height:100%;object-fit:cover}
+  .sc-frame{position:absolute;inset:18% 12%;border:3px solid rgba(201,168,76,.9);border-radius:14px;box-shadow:0 0 0 2000px rgba(0,0,0,.25)}
+  .sc-line{position:absolute;left:12%;right:12%;height:2px;background:var(--oro);box-shadow:0 0 12px var(--oro);animation:sweep 2s ease-in-out infinite}
+  @keyframes sweep{0%,100%{top:20%}50%{top:78%}}
+  .sc-status{text-align:center;font-size:.9rem;color:rgba(255,255,255,.8);margin-bottom:12px;min-height:20px}
+  .sc-manual{display:flex;gap:8px;margin-bottom:12px}
+  .sc-manual input{flex:1;padding:12px 14px;border-radius:12px;border:none;font-family:inherit;font-size:1rem;background:rgba(255,255,255,.12);color:#fff}
+  .sc-manual button{border:none;background:var(--oro);color:#fff;border-radius:12px;padding:0 18px;font-weight:700;cursor:pointer}
+  .sc-demo{border-top:1px solid rgba(255,255,255,.15);padding-top:12px}
+  .sc-demo p{font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:8px}
+  .sc-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:rgba(255,255,255,.12);border:none;color:#fff;padding:7px 11px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer}
+  .chip:active{background:var(--oro)}
+
+  .pie{margin-top:26px;text-align:center;font-size:.74rem;color:var(--gris)} .pie b{color:var(--oro-hondo)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="marca">Reposición <span>del local</span></div>
+    <div class="sub">Dictá · escribí · escaneá — demo</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" id="tabLista" onclick="ir('lista')">Lista para reponer <span class="badge" id="bLista">0</span></button>
+    <button class="tab" id="tabCat" onclick="ir('cat')">Catálogo</button>
+  </div>
+
+  <!-- LISTA -->
+  <div id="vLista">
+    <div class="entrada">
+      <label>¿Qué falta?</label>
+      <div class="fila-in">
+        <input id="in" type="text" placeholder="Escribí un producto…" autocomplete="off" oninput="autocompletar()" onkeydown="if(event.key==='Enter')enter()">
+        <button class="icobtn b-mic" id="mic" onclick="dictar()" title="Dictar por voz">🎤</button>
+        <button class="icobtn b-cam" onclick="openScanner()" title="Escanear código">📷</button>
+      </div>
+      <div class="tip" id="tip">Tocá 🎤 y decí lo que falta: "vainilla, menta, chocolate". La app lo suma solo.</div>
+      <div class="sugs" id="sugs"></div>
+    </div>
+
+    <div class="cab"><h2>Para el encargado</h2><span class="cont" id="cont"></span></div>
+    <div class="lista" id="pedido"></div>
+
+    <div class="barra">
+      <button class="btn btn-oro" onclick="copiar()">📋 Copiar para WhatsApp</button>
+      <button class="btn btn-linea" onclick="descargar()">⬇ Descargar</button>
+      <button class="btn btn-ghost" onclick="vaciar()">Vaciar</button>
+    </div>
+  </div>
+
+  <!-- CATÁLOGO -->
+  <div id="vCat" style="display:none">
+    <div class="search"><span class="ico">🔍</span><input id="q" placeholder="Buscar producto, código o aroma…" oninput="renderCat()"></div>
+    <div class="lista" id="catLista"></div>
+  </div>
+
+  <div class="pie">Simulación de <b>Lógica de Capital</b> · Lo que no ves, te define.</div>
+</div>
+
+<!-- ESCÁNER -->
+<div class="scanner" id="scanner">
+  <div class="sc-top"><h3>Escanear código</h3><button class="sc-close" onclick="closeScanner()">✕</button></div>
+  <div class="sc-view"><video id="video" playsinline muted></video><div class="sc-frame"></div><div class="sc-line"></div></div>
+  <div class="sc-status" id="scStatus">Apuntá al código de barras…</div>
+  <div class="sc-manual"><input id="manualEan" inputmode="numeric" placeholder="…o el número a mano" onkeydown="if(event.key==='Enter')manualBuscar()"><button onclick="manualBuscar()">OK</button></div>
+  <div class="sc-demo"><p>¿La cámara no arranca en la vista previa? Tocá un código de prueba:</p><div class="sc-chips" id="demoChips"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---- CATÁLOGO SIMULADO (aromatización Saphirus + bazar) ----
+// En la versión real esto sale de la lista de la computadora del local.
+let catalogo = [
+  {cod:'SAP-001', ean:'7790010000018', nom:'Home Spray Vainilla 250 ml', aroma:'vainilla', cat:'Aromatización', precio:5200},
+  {cod:'SAP-002', ean:'7790010000025', nom:'Home Spray Menta 250 ml', aroma:'menta', cat:'Aromatización', precio:5200},
+  {cod:'SAP-003', ean:'7790010000032', nom:'Home Spray Chocolate 250 ml', aroma:'chocolate', cat:'Aromatización', precio:5200},
+  {cod:'SAP-004', ean:'7790010000049', nom:'Home Spray Lavanda 250 ml', aroma:'lavanda', cat:'Aromatización', precio:5200},
+  {cod:'SAP-005', ean:'7790010000056', nom:'Home Spray Frutos Rojos 250 ml', aroma:'frutos rojos', cat:'Aromatización', precio:5200},
+  {cod:'SAP-006', ean:'7790010000063', nom:'Home Spray Coco 250 ml', aroma:'coco', cat:'Aromatización', precio:5200},
+  {cod:'SAP-007', ean:'7790010000070', nom:'Esencia hornillo Vainilla', aroma:'vainilla', cat:'Esencias', precio:2100},
+  {cod:'SAP-008', ean:'7790010000087', nom:'Esencia hornillo Sándalo', aroma:'sandalo', cat:'Esencias', precio:2100},
+  {cod:'SAP-009', ean:'7790010000094', nom:'Esencia hornillo Canela', aroma:'canela', cat:'Esencias', precio:2100},
+  {cod:'SAP-010', ean:'7790010000100', nom:'Sahumerios Sándalo x8', aroma:'sandalo', cat:'Sahumerios', precio:1800},
+  {cod:'SAP-011', ean:'7790010000117', nom:'Sahumerios Palo Santo x8', aroma:'palo santo', cat:'Sahumerios', precio:2200},
+  {cod:'SAP-012', ean:'7790010000124', nom:'Sahumerios Vainilla x8', aroma:'vainilla', cat:'Sahumerios', precio:1800},
+  {cod:'SAP-013', ean:'7790010000131', nom:'Difusor de varillas Jazmín', aroma:'jazmin', cat:'Difusores', precio:7400},
+  {cod:'SAP-014', ean:'7790010000148', nom:'Difusor de varillas Coco', aroma:'coco', cat:'Difusores', precio:7400},
+  {cod:'SAP-015', ean:'7790010000155', nom:'Aromatizante textil Bebé 500 ml', aroma:'bebe', cat:'Aromatización', precio:6100},
+  {cod:'SAP-016', ean:'7790010000162', nom:'Aromatizante textil Manzana 500 ml', aroma:'manzana', cat:'Aromatización', precio:6100},
+  {cod:'BZ-101',  ean:'7790010000179', nom:'Vela aromática pote Vainilla', aroma:'vainilla', cat:'Velas', precio:3900},
+  {cod:'BZ-102',  ean:'7790010000186', nom:'Portasahumerios madera', aroma:'', cat:'Bazar', precio:2600},
+  {cod:'BZ-103',  ean:'7790010000193', nom:'Set 3 velas de citronela', aroma:'citronela', cat:'Velas', precio:4500},
+  {cod:'BZ-104',  ean:'7790010000209', nom:'Difusor eléctrico USB', aroma:'', cat:'Bazar', precio:9800},
+];
+
+const fmt = n => '$'+n.toLocaleString('es-AR');
+let vista='lista';
+let pedido = []; // {cod, qty}
+
+function ir(v){
+  vista=v;
+  document.getElementById('vLista').style.display = v==='lista'?'block':'none';
+  document.getElementById('vCat').style.display = v==='cat'?'block':'none';
+  document.getElementById('tabLista').classList.toggle('on', v==='lista');
+  document.getElementById('tabCat').classList.toggle('on', v==='cat');
+  if(v==='cat') renderCat();
+  render();
+}
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ---- AGREGAR AL PEDIDO ----
+function agregar(cod){
+  const e = pedido.find(x=>x.cod===cod);
+  if(e){ e.qty++; } else { pedido.push({cod, qty:1}); }
+  render();
+}
+function ajustar(cod,d){
+  const e = pedido.find(x=>x.cod===cod); if(!e) return;
+  e.qty += d; if(e.qty<=0) pedido = pedido.filter(x=>x.cod!==cod);
+  render();
+}
+function quitar(cod){ pedido = pedido.filter(x=>x.cod!==cod); render(); }
+function vaciar(){ if(pedido.length && confirm('¿Vaciar la lista?')){ pedido=[]; render(); } }
+
+// ---- BÚSQUEDA / MATCH ----
+function buscar(txt){
+  const t = txt.trim().toLowerCase(); if(!t) return [];
+  return catalogo.filter(p => p.nom.toLowerCase().includes(t) || p.aroma.includes(t) || p.cod.toLowerCase().includes(t) || p.ean.includes(t));
+}
+
+// ---- AUTOCOMPLETADO ----
+function autocompletar(){
+  const t = document.getElementById('in').value;
+  const box = document.getElementById('sugs');
+  const res = buscar(t).slice(0,6);
+  if(!t.trim() || res.length===0){ box.classList.remove('on'); box.innerHTML=''; return; }
+  box.innerHTML = res.map(p=>`<div class="sug" onclick="elegir('${p.cod}')"><span class="n">${p.nom}</span><span class="m">${p.cod} · ${fmt(p.precio)}</span></div>`).join('');
+  box.classList.add('on');
+}
+function elegir(cod){
+  agregar(cod);
+  document.getElementById('in').value='';
+  document.getElementById('sugs').classList.remove('on');
+  const p = catalogo.find(x=>x.cod===cod);
+  toast('Agregado: '+p.nom);
+}
+function enter(){
+  const res = buscar(document.getElementById('in').value);
+  if(res.length){ elegir(res[0].cod); }
+}
+
+// ---- DICTADO POR VOZ ----
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec=null, grabando=false;
+if(!SR){ /* sin soporte: el botón avisa */ }
+function dictar(){
+  if(!SR){ toast('Este navegador no dicta por voz. Escribí, o usá el micrófono del teclado.'); document.getElementById('in').focus(); return; }
+  const btn=document.getElementById('mic');
+  if(grabando){ try{rec.stop();}catch(e){} return; }
+  rec = new SR(); rec.lang='es-AR'; rec.interimResults=false; rec.continuous=false; rec.maxAlternatives=1;
+  rec.onstart=()=>{ grabando=true; btn.classList.add('rec'); document.getElementById('tip').textContent='Escuchando… decí lo que falta.'; };
+  rec.onerror=(e)=>{ toast('No se pudo usar el micrófono acá (probá en el celu al subirlo).'); };
+  rec.onend=()=>{ grabando=false; btn.classList.remove('rec'); document.getElementById('tip').textContent='Tocá 🎤 y decí lo que falta: "vainilla, menta, chocolate".'; };
+  rec.onresult=(e)=>{ procesarDictado(e.results[0][0].transcript); };
+  try{ rec.start(); }catch(e){ toast('Micrófono no disponible en esta vista.'); }
+}
+function procesarDictado(texto){
+  const partes = texto.toLowerCase().split(/,| y | e |;/).map(s=>s.trim()).filter(Boolean);
+  let sumados=[], noHallados=[];
+  partes.forEach(tok=>{
+    const res = buscar(tok);
+    if(res.length){ agregar(res[0].cod); sumados.push(res[0].nom.split(' ').slice(0,3).join(' ')); }
+    else noHallados.push(tok);
+  });
+  let msg = sumados.length ? 'Agregué: '+sumados.join(', ') : 'No encontré nada.';
+  if(noHallados.length) msg += ' · Sin match: '+noHallados.join(', ');
+  toast(msg);
+}
+
+// ---- RENDER PEDIDO ----
+function render(){
+  document.getElementById('bLista').textContent = pedido.length;
+  const cont = document.getElementById('pedido');
+  document.getElementById('cont').textContent = pedido.length ? pedido.length+' productos' : '';
+  if(pedido.length===0){
+    cont.innerHTML = `<div class="vacio"><div class="em">🧾</div><b>Todavía no cargaste nada</b>Dictá, escribí o escaneá lo que falta y aparece acá.</div>`;
+    return;
+  }
+  cont.innerHTML = pedido.map(item=>{
+    const p = catalogo.find(x=>x.cod===item.cod);
+    return `<div class="row">
+      <span class="cod">${p.cod}</span>
+      <div class="info"><div class="nom">${p.nom}</div><div class="cat">${p.cat}${p.precio?' · '+fmt(p.precio):''}</div></div>
+      <div class="stepper"><button onclick="ajustar('${p.cod}',-1)">−</button><div class="val">${item.qty}</div><button onclick="ajustar('${p.cod}',1)">+</button></div>
+      <button class="quitar" onclick="quitar('${p.cod}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ---- CATÁLOGO ----
+function renderCat(){
+  const t = document.getElementById('q').value.trim().toLowerCase();
+  const res = t==='' ? catalogo : buscar(t);
+  const cont = document.getElementById('catLista');
+  cont.innerHTML = res.length===0 ? `<div class="vacio"><div class="em">🔍</div><b>Sin resultados</b></div>`
+   : res.map(p=>`<div class="row">
+      <span class="cod">${p.cod}</span>
+      <div class="info"><div class="nom">${p.nom}</div><div class="cat">${p.cat}</div></div>
+      <span class="precio">${fmt(p.precio)}</span>
+      <button class="add" onclick="agregar('${p.cod}');toast('Agregado a la lista')">＋</button>
+    </div>`).join('');
+}
+
+// ---- EXPORTAR ----
+function textoPedido(){
+  const hoy = new Date().toLocaleDateString('es-AR');
+  let t = `PEDIDO DE REPOSICIÓN — ${hoy}\n(${pedido.length} productos)\n\n`;
+  pedido.forEach(i=>{ const p=catalogo.find(x=>x.cod===i.cod); t += `• ${p.nom} (${p.cod}) x ${i.qty}\n`; });
+  return t;
+}
+function copiar(){ if(!pedido.length) return toast('La lista está vacía'); navigator.clipboard.writeText(textoPedido()).then(()=>toast('Copiado ✓ Pegalo en WhatsApp'),()=>toast('Usá Descargar')); }
+function descargar(){ if(!pedido.length) return toast('La lista está vacía'); const b=new Blob([textoPedido()],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='pedido-reposicion.txt'; a.click(); toast('Descargado ✓'); }
+
+// ---- ESCÁNER ----
+let stream=null, scanning=false, detector=null, handling=false, zxingReader=null;
+if('BarcodeDetector' in window){ try{ detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39']}); }catch(e){ detector=null; } }
+function beep(){ try{ const ac=new(window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(),g=ac.createGain(); o.connect(g);g.connect(ac.destination); o.frequency.value=880; g.gain.setValueAtTime(.2,ac.currentTime); o.start(); o.stop(ac.currentTime+.12);}catch(e){} }
+function setStatus(t){ document.getElementById('scStatus').textContent=t; }
+async function openScanner(){
+  document.getElementById('scanner').classList.add('open'); handling=false; buildChips(); setStatus('Encendiendo cámara…');
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+    const v=document.getElementById('video'); v.srcObject=stream; await v.play();
+    if(detector){ scanning=true; setStatus('Apuntá al código de barras…'); tick(); } else { await tryZXing(); }
+  }catch(err){ setStatus('⚠ Cámara bloqueada en esta vista. Ingresá el número o tocá un código de prueba.'); }
+}
+async function tick(){ if(!scanning) return; try{ const c=await detector.detect(document.getElementById('video')); if(c&&c.length) return onScan(c[0].rawValue);}catch(e){} if(scanning) requestAnimationFrame(tick); }
+async function tryZXing(){
+  setStatus('Cargando lector…');
+  try{
+    if(!window.ZXing){ await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);}); }
+    zxingReader=new ZXing.BrowserMultiFormatReader(); setStatus('Apuntá al código de barras…');
+    zxingReader.decodeFromVideoElement(document.getElementById('video'),(r)=>{ if(r) onScan(r.getText()); });
+  }catch(e){ setStatus('⚠ Este navegador no lee con la cámara. Ingresá el número o probá un código de prueba.'); }
+}
+function onScan(raw){
+  if(handling) return; handling=true;
+  const code=String(raw).trim();
+  const p=catalogo.find(x=>x.ean===code||x.cod.toLowerCase()===code.toLowerCase());
+  beep(); if(navigator.vibrate) navigator.vibrate(80);
+  if(p){ setStatus('✓ '+p.nom); agregar(p.cod); setTimeout(()=>{ closeScanner(); ir('lista'); toast('Agregado: '+p.nom); },350); }
+  else { setStatus('✕ Código '+code+' no está en el catálogo'); setTimeout(()=>{ handling=false; setStatus('Apuntá al código de barras…'); },1400); }
+}
+function manualBuscar(){ const v=document.getElementById('manualEan').value.trim(); if(v) onScan(v); }
+function closeScanner(){
+  scanning=false; handling=false;
+  if(zxingReader){ try{zxingReader.reset();}catch(e){} zxingReader=null; }
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  document.getElementById('manualEan').value='';
+  document.getElementById('scanner').classList.remove('open');
+}
+function buildChips(){
+  const ej=[catalogo[0],catalogo[1],catalogo[2]];
+  document.getElementById('demoChips').innerHTML = ej.map(p=>`<button class="chip" onclick="onScan('${p.ean}')">${p.aroma||p.nom}</button>`).join('');
+}
+
+render();
+</script>
+</body>
+</html>
